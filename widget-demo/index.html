@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Demo</title>
+</head>
+<body>
+  <div id="widget-container"></div>
+  <script>
+    async function loadWidget(widgetId) {
+      const response = await fetch(`http://localhost:5000/api/widget/${widgetId}`);
+      const widgetConfig = await response.json();
+
+      const container = document.getElementById("widget-container");
+      container.style.color = widgetConfig.uiConfig.color;
+
+      const productsResponse = await fetch(widgetConfig.apiInfo);
+      const products = await productsResponse.json();
+
+      products.forEach((product) => {
+        const item = document.createElement("div");
+        item.innerHTML = `
+          <img src="${product[widgetConfig.fieldMapping.image]}" alt="${product[widgetConfig.fieldMapping.name]}" />
+          <p>${product[widgetConfig.fieldMapping.name]}</p>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    loadWidget("exampleWidgetId");
+  </script>
+</body>
+</html>
